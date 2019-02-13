@@ -1,0 +1,41 @@
+<!--index.wxml-->
+<view class="content">
+  <view class='head_top'>
+    <view class='screen' style='font-size:{{akSize}}'>{{screenData}}</view>
+  </view>
+
+  <view class='cont_bottom'>
+    <view class='btnGroup'>
+      <view class="item gray" bindtap="clickBtn" id="{{idc}}">С</view>
+      <view class="item gray" bindtap="clickBtn" id="{{iddiv}}">÷</view>
+      <view class="item gray" bindtap="clickBtn" id="{{idx}}">×</view>
+      <view class="item gray" bindtap="clickBtn" id="{{idb}}">←</view>
+    </view>
+    <view class="btnGroup">
+      <view class="item white" bindtap="clickBtn" id="{{id7}}">7</view>
+      <view class="item white" bindtap="clickBtn" id="{{id8}}">8</view>
+      <view class="item white" bindtap="clickBtn" id="{{id9}}">9</view>
+      <view class="item gray iconBtn" bindtap="history">
+        <icon type="{{iconType}}" color="{{iconColor}}" class="icon" size="25" />
+      </view>
+    </view>
+    <view class="btnGroup">
+      <view class="item white" bindtap="clickBtn" id="{{id4}}">4</view>
+      <view class="item white" bindtap="clickBtn" id="{{id5}}">5</view>
+      <view class="item white" bindtap="clickBtn" id="{{id6}}">6</view>
+      <view class="item gray" bindtap="clickBtn" id="{{idj}}">－</view>
+    </view>
+    <view class="btnGroup">
+      <view class="item white" bindtap="clickBtn" id="{{id1}}">1</view>
+      <view class="item white" bindtap="clickBtn" id="{{id2}}">2</view>
+      <view class="item white" bindtap="clickBtn" id="{{id3}}">3</view>
+      <view class="item gray" bindtap="clickBtn" id="{{idadd}}">＋</view>
+    </view>
+    <view class="btnGroup">
+      <view class="item white" style='width:50%;' bindtap="clickBtn" id="{{id0}}">0</view>
+      <view class="item white" bindtap="clickBtn" id="{{idd}}">.</view>
+      <view class="item gray" style='background:#1919CE;color:#fff;' bindtap="clickBtn" id="{{ide}}">＝</view>
+    </view>
+  </view>
+
+</view>
