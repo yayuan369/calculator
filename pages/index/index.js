@@ -1,7 +1,6 @@
 //index.js
 //获取应用实例
 const app = getApp()
-
 Page({
   data: {
     screenData: "0",
@@ -30,7 +29,6 @@ Page({
     iconType: 'waiting_circle',
     iconColor: '#1919CE',
 
-    arr: [],
     logs: [], //历史记录
 
     operaSymbo: {
@@ -43,6 +41,7 @@ Page({
     lastIsOperaSymbo: false,
 
     akSize: '50px', //显示的字体大小
+
 
   },
   //事件处理函数
@@ -59,7 +58,9 @@ Page({
       this.setData({
         "screenData": "0"
       });
-      this.data.arr.length = 0;
+      app.globalData.array = [];
+      app.globalData.fuhao = [];
+      // this.data.arr.length = 0;
       this.setData({
         "akSize": '50px'
       })
@@ -88,7 +89,7 @@ Page({
       this.setData({
         "screenData": data
       })
-      this.data.arr.pop();
+      // this.data.arr.pop();
     } else if (id == this.data.idt) { //正负号
       var data = this.data.screenData;
       if (data == '0') {
@@ -99,10 +100,10 @@ Page({
       var firstWord = data.charAt(0);
       if (firstWord == '-') {
         data = data.substr(1); //截取第一位之后的字符串
-        this.data.arr.shift(); //删除第一个元素，并返回第一个元素的值
+        // this.data.arr.shift(); //删除第一个元素，并返回第一个元素的值
       } else {
         data = "-" + data;
-        this.data.arr.unshift("-"); //向数组的开头添加一个或更多元素，并返回新的长度
+        // this.data.arr.unshift("-"); //向数组的开头添加一个或更多元素，并返回新的长度
       }
 
       this.setData({
@@ -110,10 +111,10 @@ Page({
       })
     } else if (id == this.data.ide) { //等于号
       var data = this.data.screenData;
+      console.log('datat==', this.data.screenData)
       if (data == '0') {
         return;
       }
-      console.log('sjkajsak', this.data.screenData, this.data.screenData.length)
       if (this.data.screenData.length > 13) {
         this.setData({
           "akSize": '30px'
@@ -128,10 +129,9 @@ Page({
       if (isNaN(lastWOrd)) {
         return;
       }
-
       var num = "";
       var lastOperater = "";
-      var newArr = this.data.arr;
+      var newArr = this.data.screenData;
       var operator = [];
       for (var i in newArr) {
         if ((isNaN(newArr[i]) == false || newArr[i] == this.data.idd) || newArr[i] == this.data.idt) {
@@ -145,33 +145,55 @@ Page({
       }
 
       operator.push(Number(num));
-      console.log('sad', operator)
+      // console.log('sad', operator);
 
       var res = Number(operator[0]) * 1.0;
-      for (var i = 1; i < operator.length; i++) {
-        if (isNaN(operator[i])) {
-          if (operator[i] == this.data.idadd) { //加
-            res += Number(operator[i + 1]);
-          } else if (operator[i] == this.data.idj) { //减
-            res -= Number(operator[i + 1]);
-          } else if (operator[i] == this.data.idx) { //乘
-            res *= Number(operator[i + 1]);
-          } else if (operator[i] == this.data.iddiv) { //除
-            res /= Number(operator[i + 1]);
+
+      var ask = operator;
+      console.log('ask', ask);
+      for (var h = 0; h < ask.length; h++) {
+        if (h % 2 == 0) {
+          if (ask[h]!="") {
+            app.globalData.array.push(ask[h]);
+          }
+        } else {
+          if (ask[h]!="") {
+            app.globalData.fuhao.push(ask[h]);
           }
         }
       }
+
+      console.log('array', app.globalData.array)
+      console.log('fuhao', app.globalData.fuhao)
+
+      //更换乘除号
+      for (var h = 0; h < app.globalData.fuhao.length; h++) {
+        if (app.globalData.fuhao[h] == "×") {
+          app.globalData.fuhao[h] = "*";
+        } else if (app.globalData.fuhao[h] == "÷") {
+          app.globalData.fuhao[h] = "/";
+        }
+      }
+      //先乘除取余，后加减
+      this.jisuan_1();
+      this.jisuan_2();
+      res = app.globalData.array[0];
+
+      // 清空上一次数据
+      app.globalData.array = [];
+      app.globalData.fuhao = [];
+
 
       //存储历史记录
       this.data.logs.push(data + "=" + res);
       wx.setStorageSync("calcLogs", this.data.logs);
 
-      this.data.arr.length = 0;
-      this.data.arr.push(res);
-
+      // this.data.arr.length = 0;
+      // this.data.arr.push(res);
       this.setData({
         "screenData": res + ""
       })
+      operator=[];
     } else {
       if (this.data.operaSymbo[id]) { //如果是符号+-*/
         if (this.data.lastIsOperaSymbo || this.data.screenData == "0") {
@@ -189,7 +211,7 @@ Page({
       this.setData({
         "screenData": data
       });
-      this.data.arr.push(id);
+      // this.data.arr.push(id);
 
       if (this.data.operaSymbo[id]) {
         this.setData({
@@ -204,7 +226,64 @@ Page({
 
 
   },
+  //将数组往前移一位
+  yidong() {
+    console.log('22')
+    //数字前移
+    for (var a = 0; a < app.globalData.array.length; a++) {
+      if ((a + 1) < app.globalData.array.length) {
+        if (app.globalData.array[a] == "" && app.globalData.array[a + 1] != "") {
+          app.globalData.array[a] = app.globalData.array[a + 1];
+          app.globalData.array[a + 1] = "";
+        }
+      }
+    }
+    //清除符号数组空值
+    for (var i = 0; i < app.globalData.fuhao.length; i++) {
+      if (app.globalData.fuhao[i] == "" || typeof(app.globalData.fuhao[i]) == "undefined") {
+        app.globalData.fuhao.splice(i, 1);
+        i = i - 1;
+      }
+    }
+  },
+  //先算乘除
+  jisuan_1() {
+    for (var a = 0; a < app.globalData.fuhao.length; a++) {
+      for (var h = 0; h < app.globalData.array.length; h++) {
+        if (app.globalData.fuhao[a] == "*") {
+          app.globalData.array[a] = parseFloat(app.globalData.array[a]) * parseFloat(app.globalData.array[a + 1]);
+          app.globalData.array[a + 1] = "";
+          app.globalData.fuhao[a] = "";
+          this.yidong();
+        } else if (app.globalData.fuhao[a] == "/") {
+          app.globalData.array[a] = parseFloat(app.globalData.array[a]) / parseFloat(app.globalData.array[a + 1]);
+          app.globalData.array[a + 1] = "";
+          app.globalData.fuhao[a] = "";
+          this.yidong();
+        }
+      }
+    }
+  },
+  //再算加减
+  jisuan_2() {
+    for (var a = 0; a < app.globalData.fuhao.length; a++) {
+      for (var h = 0; h < app.globalData.array.length; h++) {
+        if (app.globalData.fuhao[a] == "＋") {
+          app.globalData.array[a] = parseFloat(app.globalData.array[a]) + parseFloat(app.globalData.array[a + 1]);
+          app.globalData.array[a + 1] = "";
+          app.globalData.fuhao[a] = "";
+          this.yidong();
+        } else if (app.globalData.fuhao[a] == "－") {
+          app.globalData.array[a] = parseFloat(app.globalData.array[a]) - parseFloat(app.globalData.array[a + 1]);
+          app.globalData.array[a + 1] = "";
+          app.globalData.fuhao[a] = "";
 
+          this.yidong();
+        }
+      }
+    }
+    console.log('123333', app.globalData.array, app.globalData.fuhao)
+  },
   //历史记录
   history() {
     wx.navigateTo({
